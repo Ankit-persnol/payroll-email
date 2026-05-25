@@ -1,0 +1,5 @@
+employee_id,employee_name,email,month,department,basic,allowances,deductions,net_salary
+EMP001,Aarav Sharma,aarav@example.com,2026-05,Engineering,60000,12000,8000,64000
+EMP002,Priya Patel,priya@example.com,2026-05,Design,55000,10000,7500,57500
+EMP003,Rohan Mehta,rohan@example.com,2026-05,Sales,50000,15000,7000,58000
+EMP004,Anika Rao,anika@example.com,2026-05,HR,52000,9000,7200,53800
