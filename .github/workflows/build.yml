@@ -27,9 +27,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Force-install pdfkit transitive helpers (npm bug workaround)
-        run: npm install --no-save call-bind-apply-helpers dunder-proto get-proto
-
       - name: Build app + installer
         run: npm run package
         env:

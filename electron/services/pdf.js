@@ -1,70 +1,100 @@
 const fs = require('fs');
-const PDFDocument = require('pdfkit');
+const { PDFDocument, StandardFonts, rgb } = require('pdf-lib');
 
-function generateSalarySlip(row, settings, outPath) {
-  return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({ size: 'A4', margin: 50 });
-    const stream = fs.createWriteStream(outPath);
-    doc.pipe(stream);
+async function generateSalarySlip(row, settings, outPath) {
+  const doc = await PDFDocument.create();
+  const page = doc.addPage([595, 842]); // A4
+  const font = await doc.embedFont(StandardFonts.Helvetica);
+  const bold = await doc.embedFont(StandardFonts.HelveticaBold);
 
-    const company = settings?.company_name || 'Your Company';
-    const address = settings?.company_address || '';
+  const company = settings?.company_name || 'Your Company';
+  const address = settings?.company_address || '';
 
-    doc.fillColor('#2563eb').fontSize(22).text(company, { align: 'left' });
-    if (address) doc.fillColor('#64748b').fontSize(10).text(address);
-    doc.moveDown(0.5);
-    doc.fillColor('#0f172a').fontSize(16).text(`Salary Slip — ${row.month}`, { align: 'right' });
-    doc.moveDown();
+  const brand = rgb(0.145, 0.388, 0.922); // #2563eb
+  const text = rgb(0.058, 0.090, 0.165);  // #0f172a
+  const muted = rgb(0.392, 0.455, 0.545); // #64748b
+  const border = rgb(0.886, 0.910, 0.941); // #e2e8f0
+  const headerBg = rgb(0.945, 0.961, 0.976); // #f1f5f9
 
-    doc.strokeColor('#e2e8f0').lineWidth(1).moveTo(50, doc.y).lineTo(545, doc.y).stroke();
-    doc.moveDown();
+  const M = 50;
+  let y = 800;
 
-    doc.fontSize(11).fillColor('#0f172a');
-    doc.text(`Employee ID: ${row.employee_id}`);
-    doc.text(`Name: ${row.employee_name}`);
-    doc.text(`Department: ${row.department || '-'}`);
-    doc.text(`Email: ${row.email}`);
-    doc.moveDown();
+  page.drawText(company, { x: M, y, size: 22, font: bold, color: brand });
+  page.drawText(`Salary Slip — ${row.month}`, { x: 595 - M - bold.widthOfTextAtSize(`Salary Slip — ${row.month}`, 16), y, size: 16, font: bold, color: text });
+  y -= 20;
+  if (address) {
+    page.drawText(address, { x: M, y, size: 10, font, color: muted });
+    y -= 16;
+  }
+  y -= 10;
+  page.drawLine({ start: { x: M, y }, end: { x: 595 - M, y }, thickness: 1, color: border });
+  y -= 20;
 
-    const basic = num(row.basic);
-    const allowances = num(row.allowances);
-    const deductions = num(row.deductions);
-    const net = num(row.net_salary) || (basic + allowances - deductions);
+  const lines = [
+    `Employee ID: ${row.employee_id}`,
+    `Name: ${row.employee_name}`,
+    `Department: ${row.department || '-'}`,
+    `Email: ${row.email}`,
+  ];
+  for (const line of lines) {
+    page.drawText(line, { x: M, y, size: 11, font, color: text });
+    y -= 16;
+  }
+  y -= 10;
 
-    table(doc, [
-      ['Earnings', 'Amount'],
-      ['Basic', fmt(basic)],
-      ['Allowances', fmt(allowances)],
-    ]);
-    doc.moveDown(0.5);
-    table(doc, [
-      ['Deductions', 'Amount'],
-      ['Total deductions', fmt(deductions)],
-    ]);
-    doc.moveDown();
+  const basic = num(row.basic);
+  const allowances = num(row.allowances);
+  const deductions = num(row.deductions);
+  const net = num(row.net_salary) || (basic + allowances - deductions);
 
-    doc.fillColor('#2563eb').fontSize(14).text(`Net Salary: ${fmt(net)}`, { align: 'right' });
-    doc.moveDown(2);
-    doc.fillColor('#94a3b8').fontSize(9).text('This is a system-generated salary slip and does not require a signature.', { align: 'center' });
+  y = drawTable(page, M, y, 495, [
+    ['Earnings', 'Amount'],
+    ['Basic', fmt(basic)],
+    ['Allowances', fmt(allowances)],
+  ], { font, bold, text, border, headerBg });
+  y -= 10;
 
-    doc.end();
-    stream.on('finish', resolve);
-    stream.on('error', reject);
+  y = drawTable(page, M, y, 495, [
+    ['Deductions', 'Amount'],
+    ['Total deductions', fmt(deductions)],
+  ], { font, bold, text, border, headerBg });
+  y -= 30;
+
+  const netText = `Net Salary: ${fmt(net)}`;
+  page.drawText(netText, {
+    x: 595 - M - bold.widthOfTextAtSize(netText, 14),
+    y, size: 14, font: bold, color: brand,
   });
+  y -= 60;
+
+  const footer = 'This is a system-generated salary slip and does not require a signature.';
+  page.drawText(footer, {
+    x: (595 - font.widthOfTextAtSize(footer, 9)) / 2,
+    y, size: 9, font, color: muted,
+  });
+
+  const bytes = await doc.save();
+  fs.writeFileSync(outPath, bytes);
 }
 
-function table(doc, rows) {
-  const startX = 50, colW = 247;
-  const startY = doc.y;
+function drawTable(page, x, y, width, rows, { font, bold, text, border, headerBg }) {
+  const rowH = 22;
+  const colW = width / 2;
   rows.forEach((r, i) => {
-    const y = startY + i * 22;
-    if (i === 0) doc.rect(startX, y, colW * 2, 22).fill('#f1f5f9').fillColor('#0f172a');
-    doc.fillColor('#0f172a').fontSize(11)
-      .text(r[0], startX + 8, y + 6, { width: colW - 16 })
-      .text(r[1], startX + colW + 8, y + 6, { width: colW - 16, align: 'right' });
-    doc.strokeColor('#e2e8f0').rect(startX, y, colW * 2, 22).stroke();
+    const topY = y - i * rowH;
+    if (i === 0) {
+      page.drawRectangle({ x, y: topY - rowH, width, height: rowH, color: headerBg });
+    }
+    page.drawRectangle({ x, y: topY - rowH, width, height: rowH, borderColor: border, borderWidth: 1 });
+    const f = i === 0 ? bold : font;
+    page.drawText(r[0], { x: x + 8, y: topY - rowH + 7, size: 11, font: f, color: text });
+    const rightText = r[1];
+    page.drawText(rightText, {
+      x: x + width - 8 - f.widthOfTextAtSize(rightText, 11),
+      y: topY - rowH + 7, size: 11, font: f, color: text,
+    });
   });
-  doc.y = startY + rows.length * 22 + 4;
+  return y - rows.length * rowH;
 }
 
 const num = (v) => Number(String(v || '').replace(/[^0-9.-]/g, '')) || 0;
