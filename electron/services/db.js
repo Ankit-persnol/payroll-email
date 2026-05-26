@@ -42,10 +42,13 @@ function updateStatus(id, status, error) {
   db.prepare('UPDATE email_log SET status=?, error=?, created_at=CURRENT_TIMESTAMP WHERE id=?').run(status, error, id);
 }
 
-function getHistory({ q = '', status = 'all', limit = 500 } = {}) {
+function getHistory({ q = '', status = 'all', month = 'all', fromDate = '', toDate = '', limit = 500 } = {}) {
   const where = [];
   const params = {};
   if (status && status !== 'all') { where.push('status = @status'); params.status = status; }
+  if (month && month !== 'all')   { where.push('month = @month');   params.month  = month; }
+  if (fromDate) { where.push('date(created_at) >= date(@fromDate)'); params.fromDate = fromDate; }
+  if (toDate)   { where.push('date(created_at) <= date(@toDate)');   params.toDate   = toDate; }
   if (q) {
     where.push('(employee_name LIKE @q OR email LIKE @q OR employee_id LIKE @q)');
     params.q = `%${q}%`;

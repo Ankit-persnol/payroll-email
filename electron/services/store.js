@@ -34,9 +34,28 @@ const DEFAULT_TEMPLATE = {
   body: 'Hi {{employee_name}},\n\nPlease find attached your salary slip for {{month}}.\n\nNet salary: {{net_salary}}\n\nRegards,\nHR Team',
 };
 
+const DEFAULT_SETTINGS = {
+  company_name: 'Talentelgia Technologies Pv.t Ltd',
+  company_address: 'Dibon Building, Ground Floor, Plot No ITC-2, Sector 67\nMohali, Punjab (160062)',
+  company_website: 'www.talentelgia.com',
+  logo_path: '',
+  signature_image_path: '',
+  from_name: 'HR Team',
+  from_email: '',
+  transport: 'smtp',
+  smtp_host: 'smtp-relay.brevo.com',
+  smtp_port: 587,
+  smtp_secure: false,
+  smtp_user: '',
+  smtp_pass: '',
+  sendgrid_key: '',
+};
+
 function getSettings() {
-  const s = store.get('settings', {});
-  const out = { ...s };
+  const saved = store.get('settings', null);
+  // First run: hand back the defaults so the form is pre-populated.
+  if (!saved) return { ...DEFAULT_SETTINGS };
+  const out = { ...DEFAULT_SETTINGS, ...saved };
   for (const f of SECRET_FIELDS) out[f] = dec(out[f]);
   return out;
 }

@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { LayoutDashboard, Upload, History, FileText, Settings, Moon, Sun } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Toaster } from './toast.jsx';
 
 const nav = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -43,12 +44,13 @@ export default function App() {
         </nav>
         <button
           onClick={() => setDark(!dark)}
-          className="m-3 btn-ghost text-sm justify-center"
+          className="m-3 btn-ghost text-sm justify-start"
         >
           {dark ? <Sun size={16} /> : <Moon size={16} />} {dark ? 'Light' : 'Dark'} mode
         </button>
       </aside>
       <main className="flex-1 overflow-auto p-8"><Outlet /></main>
+      <Toaster />
     </div>
   );
 }

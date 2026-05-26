@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { UploadCloud, Send, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { api } from '../api.js';
+import { toast } from '../toast.jsx';
 
 export default function Upload() {
   const [rows, setRows] = useState([]);
@@ -24,8 +25,11 @@ export default function Upload() {
     try {
       const result = await api.sendBatch(rows, (p) => setProgress(p));
       setProgress({ done: rows.length, total: rows.length, ...result });
+      if (result.failed === 0) toast.success(`All ${result.sent} emails sent successfully`);
+      else if (result.sent === 0) toast.error(`All ${result.failed} emails failed — check History for details`);
+      else toast.info(`${result.sent} sent, ${result.failed} failed — check History`);
     } catch (e) {
-      alert('Send failed: ' + e.message);
+      toast.error('Send failed: ' + e.message);
     } finally {
       setSending(false);
     }
