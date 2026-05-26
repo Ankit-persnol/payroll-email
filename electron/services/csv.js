@@ -88,6 +88,12 @@ function parseAndValidate(text) {
 
   const month = previousMonthLabel();
 
+  const FIELD_LABELS = {
+    employee_id: 'Employee Code',
+    employee_name: 'Employee Name',
+    email: 'EMAIL',
+  };
+
   parsed.data.forEach((raw, i) => {
     const rowNum = i + 2;
     const r = {};
@@ -96,11 +102,17 @@ function parseAndValidate(text) {
       const canonical = HEADER_ALIASES[key] || key;
       r[canonical] = String(v ?? '').trim();
     }
+    // Skip completely empty rows (trailing blanks Excel often exports)
+    if (Object.values(r).every(v => v === '')) return;
+
     // Always use previous calendar month — ignore any 'month' column the CSV might contain.
     r.month = month;
 
     for (const f of REQUIRED) {
-      if (!r[f]) { errors.push({ row: rowNum, message: `missing ${f}` }); return; }
+      if (!r[f]) {
+        errors.push({ row: rowNum, message: `${FIELD_LABELS[f]} is empty` });
+        return;
+      }
     }
     if (!EMAIL_RE.test(r.email)) {
       errors.push({ row: rowNum, message: `invalid email: ${r.email}` });

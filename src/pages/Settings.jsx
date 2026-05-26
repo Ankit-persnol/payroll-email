@@ -57,7 +57,7 @@ export default function Settings() {
   }
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6 max-w-3xl pb-28">
       <header>
         <h2 className="text-2xl font-bold">Settings</h2>
         <p className="text-slate-500 text-sm">Configure company branding and email transport. These values are used in every salary slip PDF and outgoing email.</p>
@@ -141,11 +141,13 @@ export default function Settings() {
         )}
       </section>
 
-      <div className="flex items-center gap-3 sticky bottom-0 bg-slate-50 dark:bg-slate-950 py-4">
-        <button onClick={save} className="btn-primary"><Save size={16} /> Save settings</button>
-        <button onClick={test} disabled={testing} className="btn-secondary disabled:opacity-60">
-          <Send size={16} /> {testing ? 'Sending…' : 'Send test email'}
-        </button>
+      <div className="fixed bottom-0 left-64 right-0 z-30 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-8 py-4">
+        <div className="max-w-3xl flex items-center gap-3">
+          <button onClick={save} className="btn-primary"><Save size={16} /> Save settings</button>
+          <button onClick={test} disabled={testing} className="btn-secondary disabled:opacity-60">
+            <Send size={16} /> {testing ? 'Sending…' : 'Send test email'}
+          </button>
+        </div>
       </div>
     </div>
   );
