@@ -1,6 +1,6 @@
 {
   "name": "payroll-email",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "HR Payroll Email Automation Desktop App",
   "main": "electron/main.js",
   "author": "HR Tools",
@@ -66,7 +66,10 @@
       "category": "public.app-category.business"
     },
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "icon": "build/icon.png",
       "category": "Office",
       "maintainer": "HR Tools <dev@payroll-email.local>",
