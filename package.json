@@ -57,13 +57,26 @@
       "output": "release"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "build/icon.png"
     },
     "mac": {
-      "target": "dmg"
+      "target": "dmg",
+      "icon": "build/icon.png",
+      "category": "public.app-category.business"
     },
     "linux": {
-      "target": "AppImage"
+      "target": ["AppImage", "deb"],
+      "icon": "build/icon.png",
+      "category": "Office",
+      "maintainer": "HR Tools <dev@payroll-email.local>",
+      "synopsis": "HR Payroll Email Automation",
+      "description": "Desktop app for HR teams to bulk-send personalized salary slip PDFs to employees from a CSV file.",
+      "desktop": {
+        "Name": "Payroll Email",
+        "Comment": "HR Payroll Email Automation",
+        "Categories": "Office;Finance;"
+      }
     }
   }
 }
