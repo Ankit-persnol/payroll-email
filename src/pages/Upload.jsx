@@ -39,7 +39,7 @@ export default function Upload() {
     <div className="space-y-6">
       <header>
         <h2 className="text-2xl font-bold">Upload payroll CSV</h2>
-        <p className="text-slate-500 text-sm">Required columns: employee_id, employee_name, email, month, department, basic, allowances, deductions, net_salary</p>
+        <p className="text-slate-500 text-sm">Required columns: <code>employee_id</code>, <code>employee_name</code>, <code>email</code>. All other fields (designation, PAN, basic, HRA, etc.) are optional. Month is auto-set to the previous calendar month.</p>
       </header>
 
       <label

@@ -1,7 +1,16 @@
 const Papa = require('papaparse');
 
-const REQUIRED = ['employee_id', 'employee_name', 'email', 'month'];
+const REQUIRED = ['employee_id', 'employee_name', 'email'];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function previousMonthLabel() {
+  const d = new Date();
+  d.setDate(1);          // avoid month-end rollover surprises
+  d.setMonth(d.getMonth() - 1);
+  return `${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}`;
+}
 
 // Map of "user CSV header" → canonical internal name.
 // Headers from the file are normalized first (lowercase + collapse spaces/dashes to underscore),
@@ -77,6 +86,8 @@ function parseAndValidate(text) {
   const errors = [];
   const seen = new Set();
 
+  const month = previousMonthLabel();
+
   parsed.data.forEach((raw, i) => {
     const rowNum = i + 2;
     const r = {};
@@ -85,6 +96,8 @@ function parseAndValidate(text) {
       const canonical = HEADER_ALIASES[key] || key;
       r[canonical] = String(v ?? '').trim();
     }
+    // Always use previous calendar month — ignore any 'month' column the CSV might contain.
+    r.month = month;
 
     for (const f of REQUIRED) {
       if (!r[f]) { errors.push({ row: rowNum, message: `missing ${f}` }); return; }
