@@ -3,7 +3,9 @@ import { Save, Send } from 'lucide-react';
 import { api } from '../api.js';
 
 const empty = {
-  company_name: '', company_address: '', from_name: '', from_email: '',
+  company_name: '', company_address: '', company_website: '',
+  logo_path: '', signature_image_path: '',
+  from_name: '', from_email: '',
   transport: 'smtp', smtp_host: '', smtp_port: 587, smtp_secure: false,
   smtp_user: '', smtp_pass: '', sendgrid_key: '',
 };
@@ -34,8 +36,12 @@ export default function Settings() {
 
       <section className="card p-5 space-y-3">
         <h3 className="font-semibold">Company branding</h3>
-        <input className="input" placeholder="Company name" value={s.company_name} onChange={upd('company_name')} />
-        <textarea className="input" placeholder="Company address" rows="2" value={s.company_address} onChange={upd('company_address')} />
+        <input className="input" placeholder="Company name (e.g. Talentelgia Technologies Pv.t Ltd)" value={s.company_name} onChange={upd('company_name')} />
+        <textarea className="input" placeholder="Company address (one line per row — appears in header)" rows="3" value={s.company_address} onChange={upd('company_address')} />
+        <input className="input" placeholder="Company website (e.g. www.example.com)" value={s.company_website} onChange={upd('company_website')} />
+        <input className="input" placeholder="Logo PNG/JPG absolute path (e.g. /home/you/logo.png)" value={s.logo_path} onChange={upd('logo_path')} />
+        <input className="input" placeholder="Signature image PNG/JPG absolute path (optional)" value={s.signature_image_path} onChange={upd('signature_image_path')} />
+        <p className="text-xs text-slate-500">Tip: copy your logo/signature into a permanent folder, then paste the full path here.</p>
       </section>
 
       <section className="card p-5 space-y-3">

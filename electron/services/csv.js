@@ -1,6 +1,6 @@
 const Papa = require('papaparse');
 
-const REQUIRED = ['employee_id', 'employee_name', 'email', 'month', 'net_salary'];
+const REQUIRED = ['employee_id', 'employee_name', 'email', 'month'];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function parseAndValidate(text) {
