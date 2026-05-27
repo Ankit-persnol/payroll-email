@@ -99,7 +99,12 @@ async function processOne(row, existingId = null, settings, template) {
   template = template || store.getTemplate();
   const pdfDir = path.join(app.getPath('userData'), 'slips');
   fs.mkdirSync(pdfDir, { recursive: true });
-  const pdfPath = path.join(pdfDir, `${row.employee_id}_${row.month}.pdf`.replace(/\s+/g, '_'));
+  // Filename: SalarySlip_EmployeeName_EmployeeCode_Month_Year.pdf
+  // e.g. SalarySlip_Ankit_Kumar_TLGT-393_March_2026.pdf
+  const safeName = (row.employee_name || 'Employee').replace(/\s+/g, '_').replace(/[^\w\-]/g, '');
+  const safeId   = (row.employee_id  || '').replace(/\s+/g, '_').replace(/[^\w\-]/g, '');
+  const safeMonth = (row.month || '').replace(/\s+/g, '_');
+  const pdfPath = path.join(pdfDir, `SalarySlip_${safeName}_${safeId}_${safeMonth}.pdf`);
 
   let status = 'pending', error = null;
   try {

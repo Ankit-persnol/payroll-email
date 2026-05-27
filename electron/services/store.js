@@ -30,8 +30,21 @@ function dec(v) {
 const store = new Store({ name: 'config' });
 
 const DEFAULT_TEMPLATE = {
-  subject: 'Salary slip for {{month}}',
-  body: 'Hi {{employee_name}},\n\nPlease find attached your salary slip for {{month}}.\n\nNet salary: {{net_salary}}\n\nRegards,\nHR Team',
+  subject: 'Your Salary Slip for {{month}}',
+  body: `Dear {{employee_name}},
+
+I hope this message finds you well. Please find attached your salary slip for the month of {{month}}.
+
+If you have any questions or need further clarification regarding the details enclosed, please do not hesitate to reach out to me directly.
+
+Thank you for your hard work and dedication to our team.
+
+Best regards,
+Account Manager
+
+---
+This email is confidential and intended solely for the use of the individual(s) or entity to whom it is addressed.
+© {{year}} {{company_name}}. All rights reserved.`,
 };
 
 const DEFAULT_SETTINGS = {
